@@ -7,6 +7,7 @@ import {
   Button,
   Image,
   Badge,
+  useToast,
 } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
 import { useWeb3React } from '@web3-react/core';
@@ -14,28 +15,62 @@ import { useWeb3React } from '@web3-react/core';
 import useCryptoCities from '../../hooks/useCryptoCities';
 
 const Home = () => {
+  const [isMinting, setIsMinting] = useState(false);
   const [imageSrc, setImageSrc] = useState('');
   const [maxSupply, setMaxSupply] = useState();
   const [totalSupply, setTotalSupply] = useState();
-  const { active } = useWeb3React();
+  const { active, account } = useWeb3React();
   const cryptoCities = useCryptoCities();
+  const toast = useToast();
 
   const getCryptoCitiesData = useCallback(async () => {
+    setImageSrc(
+      `https://gateway.pinata.cloud/ipfs/QmVpDJfMPvf9x1vWZQQ9W7wUXvMxWQ44Rxe6e3U4Gsvfi2/${Math.floor(
+        Math.random() * 9
+      )}.png`
+    );
+
     if (cryptoCities) {
       setTotalSupply(await cryptoCities.methods.totalSupply().call());
       setMaxSupply(await cryptoCities.methods.maxSupply().call());
-
-      setImageSrc(
-        `https://gateway.pinata.cloud/ipfs/QmVpDJfMPvf9x1vWZQQ9W7wUXvMxWQ44Rxe6e3U4Gsvfi2/${Math.floor(
-          Math.random() * 9
-        )}.png`
-      );
     }
   }, [cryptoCities]);
 
   useEffect(() => {
     getCryptoCitiesData();
   }, [getCryptoCitiesData]);
+
+  const mint = () => {
+    setIsMinting(true);
+
+    cryptoCities.methods
+      .mint()
+      .send({ from: account, value: 2e16 })
+      .on('transactionHash', (txHash) => {
+        toast({
+          title: 'Transaction sent',
+          description: txHash,
+          status: 'info',
+        });
+      })
+      .on('receipt', () => {
+        setIsMinting(false);
+        toast({
+          title: 'Transaction confirmed',
+          description: 'Now you can see your NFT available.',
+          status: 'success',
+        });
+      })
+      .on('error', (error) => {
+        setIsMinting(false);
+        toast({
+          title: 'Transaction failed',
+          description: error.message,
+          status: 'error',
+        });
+        console.log(error);
+      });
+  };
 
   return (
     <Stack
@@ -94,6 +129,8 @@ const Home = () => {
             bg={'#c79f55'}
             _hover={{ bg: '#b38f4d' }}
             disabled={!cryptoCities}
+            isLoading={isMinting}
+            onClick={mint}
           >
             Get your city
           </Button>

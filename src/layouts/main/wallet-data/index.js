@@ -48,7 +48,7 @@ const WalletData = () => {
   return (
     <Flex alignItems={'center'}>
       {active ? (
-        <Tag colorScheme='green' borderRadius='full'>
+        <Tag colorScheme='orange' borderRadius='full'>
           <TagLabel>
             <Link to='/cities'>{truncatedAddress}</Link>
           </TagLabel>

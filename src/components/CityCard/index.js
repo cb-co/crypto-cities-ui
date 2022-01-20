@@ -15,13 +15,11 @@ const CityCard = ({ image, name, ...props }) => {
       maxWidth={'350px'}
       bg={useColorModeValue('white', 'gray.800')}
       boxShadow='md'
-      rounded={'lg'}
       pos={'relative'}
       zIndex={1}
       {...props}
     >
       <Box
-        rounded={'lg'}
         pos={'relative'}
         height={'360px'}
         _after={{
@@ -33,22 +31,16 @@ const CityCard = ({ image, name, ...props }) => {
           top: 0,
           left: 0,
           backgroundImage: `url(${image})`,
-          filter: 'blur(10px)',
+          filter: 'blur(1px)',
           zIndex: -1,
         }}
         _groupHover={{
           _after: {
-            filter: 'blur(15px)',
+            filter: 'blur(5px)',
           },
         }}
       >
-        <Image
-          rounded={'lg'}
-          height={360}
-          width={350}
-          objectFit={'cover'}
-          src={image}
-        />
+        <Image height={360} width={350} objectFit={'cover'} src={image} />
       </Box>
       <Stack pt={10} align={'center'}>
         <Heading fontSize={'xl'} fontFamily={'body'} fontWeight={500}>

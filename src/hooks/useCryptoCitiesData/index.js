@@ -10,6 +10,7 @@ const getCityData = async ({ cryptoCities, tokenId }) => {
   const metadata = await fetch(tokenURI).then((response) => response.json());
 
   return {
+    tokenId,
     tokenURI,
     owner,
     ...metadata,
@@ -52,4 +53,31 @@ const useCryptoCitiesData = () => {
   };
 };
 
-export { useCryptoCitiesData };
+const useCryptoCityData = (tokenId = null) => {
+  const [city, setCity] = useState({});
+  const [loading, setLoading] = useState(true);
+  const cryptoCities = useCryptoCities();
+
+  const update = useCallback(async () => {
+    if (cryptoCities && tokenId !== null) {
+      setLoading(true);
+
+      const cityResult = await getCityData({ tokenId, cryptoCities });
+      setCity(cityResult);
+
+      setLoading(false);
+    }
+  }, [cryptoCities, tokenId]);
+
+  useEffect(() => {
+    update();
+  }, [update]);
+
+  return {
+    loading,
+    city,
+    update,
+  };
+};
+
+export { useCryptoCitiesData, useCryptoCityData };

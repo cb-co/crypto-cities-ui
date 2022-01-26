@@ -68,7 +68,6 @@ const Home = () => {
           description: error.message,
           status: 'error',
         });
-        console.log(error);
       });
   };
 

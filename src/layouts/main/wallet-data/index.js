@@ -50,7 +50,7 @@ const WalletData = () => {
       {active ? (
         <Tag colorScheme='orange' borderRadius='full'>
           <TagLabel>
-            <Link to='/cities'>{truncatedAddress}</Link>
+            <Link to={`/cities?address=${account}`}>{truncatedAddress}</Link>
           </TagLabel>
           <Badge
             d={{

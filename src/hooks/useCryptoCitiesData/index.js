@@ -1,4 +1,6 @@
+import { useWeb3React } from '@web3-react/core';
 import { useCallback, useEffect, useState } from 'react';
+
 import useCryptoCities from '../useCryptoCities';
 
 const getCityData = async ({ cryptoCities, tokenId }) => {
@@ -17,19 +19,32 @@ const getCityData = async ({ cryptoCities, tokenId }) => {
   };
 };
 
-const useCryptoCitiesData = () => {
+const useCryptoCitiesData = ({ owner = null } = {}) => {
   const [cities, setCities] = useState([]);
+  const { library } = useWeb3React();
   const [loading, setLoading] = useState(true);
   const cryptoCities = useCryptoCities();
 
   const update = useCallback(async () => {
     if (cryptoCities) {
       setLoading(true);
+      let tokenIds;
 
-      const totalSupply = await cryptoCities.methods.totalSupply().call();
-      const tokenIds = new Array(Number(totalSupply))
-        .fill()
-        .map((_, index) => index);
+      if (!library.utils.isAddress(owner)) {
+        const totalSupply = await cryptoCities.methods.totalSupply().call();
+        tokenIds = new Array(Number(totalSupply))
+          .fill()
+          .map((_, index) => index);
+      } else {
+        const balanceOf = await cryptoCities.methods.balanceOf(owner).call();
+        const tokenIdsOfOwner = new Array(Number(balanceOf))
+          .fill()
+          .map((_, index) =>
+            cryptoCities.methods.tokenOfOwnerByIndex(owner, index).call()
+          );
+
+        tokenIds = await Promise.all(tokenIdsOfOwner);
+      }
 
       const citiesPromise = tokenIds.map((tokenId) =>
         getCityData({ cryptoCities, tokenId })
@@ -40,7 +55,7 @@ const useCryptoCitiesData = () => {
       setCities(citiesResult);
       setLoading(false);
     }
-  }, [cryptoCities]);
+  }, [cryptoCities, owner, library?.utils]);
 
   useEffect(() => {
     update();

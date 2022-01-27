@@ -45,7 +45,7 @@ const Home = () => {
 
     cryptoCities.methods
       .mint()
-      .send({ from: account, value: 2e16 })
+      .send({ from: account })
       .on('transactionHash', (txHash) => {
         toast({
           title: 'Transaction sent',

@@ -2,6 +2,9 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+CID: bafybeihwf76g7qazvqehefimezkfd3k7zgjnc5qi32g7oekeiiarnsugou
+fleek: https://yellow-tree-7640.on.fleek.co/
+
 ## Available Scripts
 
 In the project directory, you can run:
